@@ -1,12 +1,22 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, User } from "lucide-react";
+import { Camera, Mail, User, User2 } from "lucide-react";
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const handleImageUpload = async (e) => {};
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      setSelectedImg(base64Image);
+      await updateProfile({ profilePicture: base64Image });
+    };
+  };
 
   return (
     <div className="h-screen pt-20">
@@ -22,7 +32,7 @@ const ProfilePage = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={selectedImg || authUser.profilePic || "/avatar.png"}
+                src={selectedImg || authUser.profilePicture || "/avatar.png"}
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4 "
               />
@@ -54,6 +64,43 @@ const ProfilePage = () => {
                 ? "Uploading..."
                 : "Click the camera icon to update your photo"}
             </p>
+          </div>
+
+          {/* profile info section */}
+          <div className="space-y-6">
+            <div className="space-y-1.5">
+              <div className="text-sm text-zinc-400 flex items-center gap-2">
+                <User2 className="w-4 h-4" />
+                Full Name
+              </div>
+              <p className="px-4 py-2 bg-base-200 rounded-lg border">
+                {authUser?.fullName}
+              </p>
+            </div>
+            {/*Email */}
+            <div className="space-y-1.5">
+              <div className="text-sm text-zinc-400 flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Email Address
+              </div>
+              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">
+                {authUser?.email}
+              </p>
+            </div>
+            {/*Addional Info */}
+            <div className="mt-6 bg-base-300 rounded-xl p-6">
+              <h2 className="text-lg font-medium mb-4">Account Information</h2>
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between border-zinc-600 border-b pb-2">
+                  <span>Member Since</span>
+                  <span>{authUser.createdAt?.split("T")[0]}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Account Status</span>
+                  <span className="text-green-600">Active</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
