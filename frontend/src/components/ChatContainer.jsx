@@ -5,6 +5,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeleton/MessageSkeleton";
+import { formatRelativeTime } from "../lib/utils";
+
 const ChatContainer = () => {
   const { messages, getMessages, isMessagesLoading, selectedUser } =
     useChatStore();
@@ -45,8 +47,11 @@ const ChatContainer = () => {
               </div>
             </div>
             <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
-                {message.createdAt}
+              <time
+                className="text-xs opacity-50 ml-1"
+                title={new Date(message.createdAt).toLocaleString("en-IN")}
+              >
+                {formatRelativeTime(message.createdAt)}
               </time>
             </div>
             <div className="chat-bubble flex">
